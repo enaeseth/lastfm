@@ -45,11 +45,61 @@ class SmartData(object):
     def __init__(self, client):
         self._client = client
         
+        # Initialize fields.
+        for spec in self._fields:
+            dest = (len(spec) > 2 and spec[2]) or ('_%s' % spec[0])
+            setattr(self, dest, None)
+        
+    @classmethod
+    def from_row(cls, client, row):
+        obj = cls(client)
+        obj._add_data(row)
+        return obj
+        
+    def _add_data(self, row):
+        def add(prop, converter=None, dest=None):
+            if not dest:
+                dest = '_%s' % prop
+            
+            if prop in row:
+                if not converter:
+                    converter = lambda v: v # identity function
+                setattr(self, dest, converter(row[prop]))
+            elif not hasattr(self, dest):
+                setattr(self, dest, None)
+                
+        for spec in self._fields:
+            if len(spec) > 2:
+                dest = spec[2]
+            else:
+                dest = None
+            
+            add(spec[0], spec[1], dest)
+        
+        return self
+        
     def __getstate__(self):
         state = dict(self.__dict__)
         if '_client' in state:
             del state['_client']
         return state
+        
+def smart_property(callable):
+    """
+    Used to define a read-only property on a class that may not be immediately
+    available.
+    """
+    
+    def load_if_needed(self, *args, **kwargs):
+        result = callable(self, *args, **kwargs)
+        if result is not None:
+            return result
+        
+        self._load_info()
+        return callable(self, *args, **kwargs)
+    
+    load_if_needed.__doc__ = callable.__doc__
+    return load_if_needed
 
 class Collection(object):
     """
