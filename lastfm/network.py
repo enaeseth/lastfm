@@ -6,7 +6,11 @@ Handles the low-level details of communicating with last.fm over HTTP.
 
 from urllib import urlencode
 import urllib2
-from urlparse import urlparse, parse_qs, urlunparse
+from urlparse import urlparse, urlunparse
+try:
+    from urlparse import parse_qs
+except ImportError:
+    from cgi import parse_qs
 import sys
 
 __version__ = '0.1'
