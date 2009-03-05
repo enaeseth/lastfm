@@ -32,6 +32,16 @@ class Image(object):
             return False
         return other.url == self.url and other.size == self.size
 
+class Collection(object):
+    """
+    The base class for all collections of data made available through Client
+    objects (e.g., artists, albums, etc.).
+    """
+    
+    def __init__(self, client):
+        """Creates a new collection object (internal use only)."""
+        self._client = client
+    
 def parse_timestamp(stamp):
     """
     Parses an RFC822 timestamp as used by last.fm and returns a
