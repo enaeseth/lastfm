@@ -18,6 +18,8 @@ try:
     import json
 except ImportError:
     import simplejson as json
+    
+from lastfm.errors import APIError
 
 __version__ = '0.1'
 WS_ROOT = 'http://ws.audioscrobbler.com/2.0/'
@@ -112,8 +114,10 @@ class APIAccess(object):
                 # XXX: a way to handle POST requests
                 stream = self._agent.get(WS_ROOT, kwargs)
                 try:
-                    decoded = json.load(stream)
-                    return decoded
+                    data = json.load(stream)
+                    if 'error' in data:
+                        raise APIError(data['message'], int(data['error']))
+                    return data
                 finally:
                     stream.close()
                 
