@@ -26,7 +26,7 @@ class Cache(object):
     def __getitem__(self, key):
         try:
             item, expiration = self._store[key]
-            return (expiration <= time() and item) or None
+            return (expiration >= time() and item) or None
         except KeyError:
             return None
         
@@ -45,3 +45,6 @@ class Cache(object):
             return (expiration <= time())
         except KeyError:
             return False
+            
+    def __repr__(self):
+        return '<%s %r>' % (type(self).__name__, self._store)
