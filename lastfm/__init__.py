@@ -9,4 +9,6 @@ __version__ = "0.1.0"
 __copyright__ = "Copyright © 2009 Eric Naeseth"
 __license__   = "MIT"
 
+from lastfm.api import Client
+
 __all__ = ['api', 'caching']
