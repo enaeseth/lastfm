@@ -15,8 +15,6 @@ import sys
 
 __version__ = '0.1'
 
-def unparse_qs(params):
-    return '&'.join('%s=%s' % (k, urlencode(v)) for k, v in params.iteritems())
 
 class Agent(object):
     """
@@ -46,7 +44,7 @@ class Agent(object):
         parameters.
         """
         if isinstance(data, dict):
-            data = unparse_qs(data)
+            data = urlencode(data)
         
         return self._opener.open(url, data)
         
@@ -56,7 +54,8 @@ class Agent(object):
         parsed = urlparse(url)
         url_params = parse_qs(parsed.query)
         url_params.update(params)
-        parsed.query = unparse_qs(url_params)
+        parsed = list(parsed)
+        parsed[4] = urlencode(url_params)
         
         return urlunparse(parsed)
 
