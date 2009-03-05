@@ -19,13 +19,16 @@ class Client(object):
     All API requests are synchronus.
     """
     
-    def __init__(self, api_key, cache=None):
+    def __init__(self, api_key, secret=None, cache=None):
         """
         Creates a new last.fm API client.
         
         The `api_key` is your application's API key. An API key must be obtained
         from last.fm before the API can be used by any means (including via
         this library).
+        
+        The `secret` is your application's secret key. This key
+        is only used in requests that require authorization.
         
         The `cache` parameter can be set to a cache object which will be used to
         cache results from the last.fm service. This can be any object which
@@ -43,6 +46,7 @@ class Client(object):
             raise ValueError("cannot create a client with no API key")
         
         self._key = api_key
+        self._secret = secret
         
         if cache is False:
             self._cache = self._BlackHoleCache()
@@ -65,3 +69,5 @@ class Client(object):
 
         def __contains__(self, key):
             return False
+
+
