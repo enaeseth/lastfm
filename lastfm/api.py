@@ -13,7 +13,10 @@ from lastfm.caching import local
 
 class Client(object):
     """
-    A last.fm API client. All access to the API must go through a Client object.
+    A last.fm API client.
+    
+    All access to the API must go through a Client object.
+    All API requests are synchronus.
     """
     
     def __init__(self, api_key, cache=None):
