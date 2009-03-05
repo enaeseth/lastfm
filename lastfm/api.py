@@ -62,6 +62,9 @@ class Client(object):
             
         self._agent = agent or Agent()
         
+    def __repr__(self):
+        return '<%s %s>' % (type(self).__name__, self._key)
+        
     class _BlackHoleCache(object):
         """A black hole: a cache that stores nothing."""
         
