@@ -62,6 +62,26 @@ class Client(object):
             
         self._agent = agent or Agent()
         
+    @property
+    def api_key(self):
+        """The API key used by the client."""
+        return self._key
+        
+    @property
+    def secret(self):
+        """The secret key used by the client."""
+        return self._secret
+        
+    @property
+    def cache(self):
+        """The object cache used by the client."""
+        return self._cache
+        
+    @property
+    def agent(self):
+        """The HTTP request agent used by the client."""
+        return self._agent
+        
     def __repr__(self):
         return '<%s %s>' % (type(self).__name__, self._key)
         
