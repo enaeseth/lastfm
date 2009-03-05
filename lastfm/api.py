@@ -78,6 +78,15 @@ class Client(object):
         """The object cache used by the client."""
         return self._cache
         
+    def _cache_find(self, namespace, *values):
+        for value in values:
+            if value:
+                result = self._cache['%s:%s' % (namespace, value)]
+                if result:
+                    return result
+        
+        return None
+        
     @property
     def agent(self):
         """The HTTP request agent used by the client."""
