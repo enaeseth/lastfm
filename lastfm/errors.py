@@ -9,6 +9,12 @@ class LastFMError(Exception):
     The base class for all errors that can be raised by the last.fm library.
     """
     pass
+    
+class UnderspecifiedError(LastFMError, TypeError):
+    """
+    Raised when insufficient information is passed to a lookup method.
+    """
+    pass
 
 class APIError(LastFMError):
     """
