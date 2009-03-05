@@ -11,4 +11,4 @@ __license__   = "MIT"
 
 from lastfm.api import Client
 
-__all__ = ['api', 'caching']
+__all__ = ['api', 'caching', 'Client']
