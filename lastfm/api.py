@@ -10,7 +10,7 @@ except ImportError:
     import simplejson as json
     
 from lastfm.caching import local
-from lastfm.network import Agent
+from lastfm.network import Agent, APIAccess
 
 class Client(object):
     """
@@ -61,6 +61,7 @@ class Client(object):
             self._cache = cache
             
         self._agent = agent or Agent()
+        self._access = APIAccess(self._key, self._agent)
         
     @property
     def api_key(self):
@@ -81,6 +82,11 @@ class Client(object):
     def agent(self):
         """The HTTP request agent used by the client."""
         return self._agent
+        
+    @property
+    def raw(self):
+        """An APIAccess object that gives raw access to the last.fm API."""
+        return self._access
         
     def __repr__(self):
         return '<%s %s>' % (type(self).__name__, self._key)
