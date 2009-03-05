@@ -3,11 +3,6 @@
 """
 Data types that represent last.fm search results.
 """
-
-try:
-    import json
-except ImportError:
-    import simplejson as json
     
 from lastfm.errors import APIError
 
@@ -21,15 +16,17 @@ class SearchResult(list):
     many items matched total.
     """
     
-    def __init__(self, stream, result_field, converter, agent, source_url):
+    def __init__(self, results, result_field, converter, agent, source_url):
         """
-        Constructs a new search result from an opened stream of search results.
+        Constructs a new search result from JSON-decoded search results.
         The stream will be closed by the time __init__ returns.
         """
         
         try:
-            self._total_results, raw = read_search_results(stream, result_field)
+            self._total_results, raw = read_search_results(results,
+                result_field)
             super(SearchResult, self).__init__(converter(e) for e in raw)
+            
             self._agent = agent
             self._result_field = result_field
             self._converter = converter
@@ -66,14 +63,12 @@ class SearchResult(list):
     def __repr__(self):
         return '<SearchResult %s>' % super(SearchResult, self).__repr__()
         
-def read_search_results(stream, result_field):
+def read_search_results(data, result_field):
     """
     Reads the search results from the stream, and returns a pair: the total
     number of results produced by the search, and the search results on this
     page.
     """
-    
-    data = json.load(stream)
     
     if data['error']:
         raise APIError(data['message'], int(data['error']))
