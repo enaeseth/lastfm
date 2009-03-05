@@ -24,6 +24,10 @@ class Image(object):
         """The image's size (small, medium, or large)."""
         return self._size
     
+    @classmethod
+    def from_row(cls, data):
+        return cls(data['#text'], data['size'])
+    
     def __repr__(self):
         return '%s(%r, %r)' % (type(self).__name__, self.url, self.size)
     
