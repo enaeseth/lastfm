@@ -31,6 +31,21 @@ class Image(object):
         if not isinstance(other, Image):
             return False
         return other.url == self.url and other.size == self.size
+        
+class SmartData(object):
+    """
+    The base class for all last.fm data types for which not all the data is
+    always immediately available (e.g., artists).
+    """
+    
+    def __init__(self, client):
+        self._client = client
+        
+    def __getstate__(self):
+        state = dict(self.__dict__)
+        if '_client' in state:
+            del state['_client']
+        return state
 
 class Collection(object):
     """
