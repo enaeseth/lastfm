@@ -10,6 +10,7 @@ except ImportError:
     import simplejson as json
     
 from lastfm.caching import local
+from lastfm.network import Agent
 
 class Client(object):
     """
@@ -19,7 +20,7 @@ class Client(object):
     All API requests are synchronus.
     """
     
-    def __init__(self, api_key, secret=None, cache=None):
+    def __init__(self, api_key, secret=None, cache=None, agent=None):
         """
         Creates a new last.fm API client.
         
@@ -40,6 +41,10 @@ class Client(object):
         lastfm.caching.memcache.Cache uses memcached as a backing. If `cache` is
         None, a default local cache will be used. If `cache` is False, no cache
         will be used.
+        
+        The `agent` parameter specifies an agent object used for making HTTP
+        requests. If set to None, a live, urllib2-based implementation will be
+        used. Changing the agent is mostly useful for testing.
         """
         
         if not api_key:
@@ -54,6 +59,8 @@ class Client(object):
             self._cache = local.Cache()
         else:
             self._cache = cache
+            
+        self._agent = agent or Agent()
         
     class _BlackHoleCache(object):
         """A black hole: a cache that stores nothing."""
