@@ -31,8 +31,9 @@ class Biography(object):
         
     @classmethod
     def from_row(cls, data):
-        return cls(data['summary'], data['content'],
-            parse_timestamp(data['published']))
+        pubdate = data['published']
+        published = (pubdate and parse_timestamp(data['published'])) or None
+        return cls(data['summary'], data['content'], published)
         
     def __repr__(self):
         return '%s(%r, %r, %r)' % (type(self).__name__, self.summary,
@@ -101,13 +102,21 @@ class Artist(SmartData):
         self._add_data(self.fetch_row(self._client, spec))
         
     @classmethod
-    def fetch_row(cls, client, spec):
+    def fetch_row(cls, client, spec, no_redirect=False):
         cached = client._cache_find('artist', spec.get('mbid'),
             spec.get('artist'))
         if cached:
             return cached
         
         fresh = client.raw.artist.get_info(**spec)['artist']
+        
+        if not no_redirect and '+noredirect' in fresh['url']:
+            # Pick the first similar artist as the correct spelling.
+            if fresh['similar'] and fresh['similar']['artist']:
+                correct = fresh['similar']['artist'][0]
+                spec = {'artist': correct['name']}
+                fresh = cls.fetch_row(client, spec, no_redirect)
+        
         client.cache['artist:%s' % fresh['name']] = fresh
         if 'mbid' in fresh:
             client.cache['artist:%s' % fresh['mbid']] = fresh
@@ -123,10 +132,15 @@ class ArtistCollection(Collection):
     Gives access to last.fm artist information.
     """
     
-    def get(self, name=None, id=None):
+    def get(self, name=None, id=None, no_redirect=False):
         """
         Gets the information for the given artist. Set the `name` parameter to
         search by name; set the `id` parameter to search by MusicBrainz ID.
+        
+        This functon will automatically try to detect when the requested name
+        is a misspelling, and will request the correct artist. To override this
+        behavior, set `no_redirect` to a true value. The spelling correction, if
+        used, will be stored in the cache.
         """
         
         spec = {}
@@ -138,4 +152,4 @@ class ArtistCollection(Collection):
             raise UnderspecifiedError('a name and/or a MBID is required')
         
         return Artist.from_row(self._client,
-            Artist.fetch_row(self._client, spec))
+            Artist.fetch_row(self._client, spec, no_redirect))
