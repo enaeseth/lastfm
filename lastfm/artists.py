@@ -122,10 +122,13 @@ class Artist(SmartData):
             client.cache['artist:%s' % fresh['mbid']] = fresh
         return fresh
         
-        
     def __repr__(self):
         id_str = (self._id and ' (%s)' % self._id) or ''
         return '<%s "%s"%s>' % (type(self).__name__, self.name, id_str)
+        
+    def __unicode__(self):
+        id_str = (self._id and ' (%s)' % self._id) or ''
+        return u'<%s "%s"%s>' % (type(self).__name__, self.name, id_str)
     
 class ArtistCollection(Collection):
     """
