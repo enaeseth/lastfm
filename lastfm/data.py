@@ -98,8 +98,9 @@ def smart_property(callable):
         self._load_info()
         return callable(self, *args, **kwargs)
     
+    load_if_needed.__name__ = callable.__name__
     load_if_needed.__doc__ = callable.__doc__
-    return load_if_needed
+    return property(load_if_needed)
 
 class Collection(object):
     """
