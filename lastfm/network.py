@@ -56,14 +56,23 @@ class Agent(object):
         
         return self._opener.open(url, data)
         
-    def _add_params(self, url, params):
+    @classmethod
+    def _encode_params(cls, params):
+        """Encodes any Unicode parameters as UTF-8."""
+        def enc(v):
+            return (isinstance(v, unicode) and v.encode('utf-8')) or v
+        
+        return [(enc(k), enc(v)) for k, v in params.iteritems()]
+        
+    @classmethod
+    def _add_params(cls, url, params):
         """Appends GET parameters to the URL and returns the result."""
         
         parsed = urlparse(url)
         url_params = parse_qs(parsed.query)
         url_params.update(params)
         parsed = list(parsed)
-        parsed[4] = urlencode(url_params)
+        parsed[4] = urlencode(cls._encode_params(url_params))
         
         return urlunparse(parsed)
 
