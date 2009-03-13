@@ -16,24 +16,19 @@ class SearchResult(list):
     many items matched total.
     """
     
-    def __init__(self, results, result_field, converter, agent, source_url):
+    def __init__(self, loader, result_field, converter):
         """
         Constructs a new search result from JSON-decoded search results.
-        The stream will be closed by the time __init__ returns.
         """
         
-        try:
-            self._total_results, raw = read_search_results(results,
-                result_field)
-            super(SearchResult, self).__init__(converter(e) for e in raw)
-            
-            self._agent = agent
-            self._result_field = result_field
-            self._converter = converter
-            self._source = source_url
-            self._last_page = 1
-        finally:
-            stream.close()
+        self._total_results, raw = read_search_results(loader(1),
+            result_field)
+        super(SearchResult, self).__init__(converter(e) for e in raw)
+        
+        self._result_field = result_field
+        self._converter = converter
+        self._loader = loader
+        self._last_page = 1
         
     @property
     def total_length(self):
@@ -49,16 +44,12 @@ class SearchResult(list):
         if len(self) >= self.total_length: # already done
             return 0
         
-        try:
-            stream = self._agent.get(self._source,
-                {'page': self._last_page + 1})
-            self._total_results, new_results = read_search_results(stream,
-                self._result_field)
-            self.extend(map(self._converter, new_results))
-            self._last_page += 1
-            return len(new_results)
-        finally:
-            stream.close()
+        results = self._loader(self._last_page + 1)
+        self._total_results, new_results = read_search_results(results,
+            self._result_field)
+        self.extend(map(self._converter, new_results))
+        self._last_page += 1
+        return len(new_results)
         
     def __repr__(self):
         return '<SearchResult %s>' % super(SearchResult, self).__repr__()
@@ -70,9 +61,11 @@ def read_search_results(data, result_field):
     page.
     """
     
-    if data['error']:
+    if 'error' in data:
         raise APIError(data['message'], int(data['error']))
     
     results = data['results']
     
-    return (int(results['opensearch:totalResults']), results[result_field])
+    match_field = '%smatches' % result_field
+    return (int(results['opensearch:totalResults']),
+        results[match_field][result_field])
