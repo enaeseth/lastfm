@@ -71,8 +71,8 @@ class Agent(object):
     def _user_agent(self):
         return 'Python-Last.fm-Client/%s (Python-urllib/%s; %s)' % (
             __version__,
-            sys.platform.capitalize(),
-            urllib2.__version__
+            urllib2.__version__,
+            sys.platform.capitalize()
         )
 
 class APIAccess(object):
