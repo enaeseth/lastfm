@@ -156,3 +156,23 @@ class ArtistCollection(Collection):
         
         return Artist.from_row(self._client,
             Artist.fetch_row(self._client, spec, no_redirect))
+
+    def search(self, name):
+        """
+        Searches last.fm for artists that match the given `name`.
+        """
+        
+        client = self._client
+        def retrieve_page(page):
+            cached = client._cache_find('artist_search', '%s:%d' % (name, page))
+            if cached:
+                return cached
+            
+            result = client.raw.artist.search(artist=name, page=page)
+            client.cache['artist_search:%s:%d' % (name, page)] = result
+            return result
+            
+        def match_to_artist(match):
+            return Artist.from_row(self._client, match)
+        
+        return SearchResult(retrieve_page, 'artist', match_to_artist)
