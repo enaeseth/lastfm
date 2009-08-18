@@ -8,40 +8,6 @@ from lastfm.errors import APIError, UnderspecifiedError
 from lastfm.results import SearchResult
 from lastfm.data import *
 
-class Biography(object):
-    def __init__(self, summary, content, published):
-        self._summary = summary
-        self._content = content
-        self._published = published
-        
-    @property
-    def summary(self):
-        """The summary of the artist biography."""
-        return self._summary
-    
-    @property
-    def content(self):
-        """The biography text."""
-        return self._content
-    
-    @property
-    def published(self):
-        """The publication date and time as a datetime.datetime object."""
-        return self._published
-        
-    @classmethod
-    def from_row(cls, data):
-        pubdate = data['published']
-        published = (pubdate and parse_timestamp(data['published'])) or None
-        return cls(data['summary'], data['content'], published)
-        
-    def __repr__(self):
-        return '%s(%r, %r, %r)' % (type(self).__name__, self.summary,
-            self.content, self.published)
-        
-    def __str__(self):
-        return self.summary
-
 class Artist(SmartData):
     """
     Represents an artist in the last.fm database.
@@ -55,7 +21,7 @@ class Artist(SmartData):
     _fields = (
         ("name", None),
         ("mbid", None, "_id"),
-        ("bio", Biography.from_row, "_biography"),
+        ("bio", WikiEntry.from_row, "_biography"),
         ("image", lambda lst: [Image.from_row(i) for i in lst], "_images"),
         ("stats", lambda s: dict((k, int(v)) for k, v in s.iteritems())),
         ("streamable", lambda v: bool(int(v))),

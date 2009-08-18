@@ -36,7 +36,45 @@ class Image(object):
         if not isinstance(other, Image):
             return False
         return other.url == self.url and other.size == self.size
-        
+    
+
+class WikiEntry(object):
+    """An entry in the last.fm music wiki."""
+    
+    def __init__(self, summary, content, published):
+        self._summary = summary
+        self._content = content
+        self._published = published
+    
+    @property
+    def summary(self):
+        """The summary of the wiki entry."""
+        return self._summary
+    
+    @property
+    def content(self):
+        """The entry text."""
+        return self._content
+    
+    @property
+    def published(self):
+        """The publication date and time as a datetime.datetime object."""
+        return self._published
+    
+    @classmethod
+    def from_row(cls, data):
+        pubdate = data['published']
+        published = (pubdate and parse_timestamp(data['published'])) or None
+        return cls(data['summary'], data['content'], published)
+    
+    def __repr__(self):
+        return '%s(%r, %r, %r)' % (type(self).__name__, self.summary,
+            self.content, self.published)
+    
+    def __str__(self):
+        return self.summary
+    
+
 class SmartData(object):
     """
     The base class for all last.fm data types for which not all the data is
