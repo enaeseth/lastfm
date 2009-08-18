@@ -97,6 +97,18 @@ class Artist(SmartData):
         """The URL of the last.fm page for this artist."""
         return self._url
         
+    @cached_result('similar_artists:{name}')
+    def get_similar(self):
+        """Gets artists that are similar to this artist."""
+        raw = self._client.raw.artist.get_similar(artist=self._name)
+        artists = raw['similarartists']['artist']
+        
+        matches = []
+        for artist in artists:
+            match = float(artist.pop('match'))
+            matches.append((match, Artist.from_row(self._client, artist)))
+        return matches
+        
     def _load_info(self):
         spec = (self._id and dict(mbid=self._id)) or dict(artist=self._name)
         self._add_data(self.fetch_row(self._client, spec))
