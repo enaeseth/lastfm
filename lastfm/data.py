@@ -6,6 +6,7 @@ Common data types used elsewhere in the library.
 
 from email.utils import parsedate
 from datetime import datetime
+import re
 
 class Image(object):
     """An image served by last.fm."""
@@ -21,7 +22,7 @@ class Image(object):
     
     @property
     def size():
-        """The image's size (small, medium, or large)."""
+        """The image's size (small, medium, large, or extralarge)."""
         return self._size
     
     @classmethod
@@ -101,6 +102,62 @@ def smart_property(callable):
     load_if_needed.__name__ = callable.__name__
     load_if_needed.__doc__ = callable.__doc__
     return property(load_if_needed)
+    
+_inline_attribute_pattern = re.compile(r'{(\w+)}')
+def cached_result(cache_id, get_cache=None):
+    """
+    Used to define a method with results that are cached. The actual function
+    will only be called to compute the results if the item is not in cache.
+    
+    The `cache_id` property gives the key under which the result is stored in
+    the cache. It is possible to have parts of this ID string filled in with
+    attributes from the object on which this property exists by enclosing them
+    in curly braces ("{" and "}").
+    
+    This function is designed to be used as a decorator, e.g.:
+    
+        @cached_result("similar_artists:{name}")
+        def get_similar(self):
+            ...
+    
+    The cache must be accessible on the object on which this method appears
+    through a Last.fm client in the _client attribute.
+    """
+    
+    def default_cache_getter(obj):
+        try:
+            return obj._cache
+        except AttributeError:
+            try:
+                return obj._client.cache
+            except AttributeError:
+                pass
+            raise # raise the original error
+    
+    if not get_cache:
+        get_cache = default_cache_getter
+    
+    def cache_callable(callable):
+        def expand_key(obj):
+            def get_attribute_value(match):
+                return getattr(obj, match.group(1))
+        
+            return _inline_attribute_pattern.sub(get_attribute_value, cache_id)
+    
+        def get_cachable_value(self, *args, **kwargs):
+            cache = get_cache(self)
+            key = expand_key(self)
+        
+            value = cache[key]
+            if value is None:
+                value = cache[key] = callable(self, *args, **kwargs)
+            return value
+    
+        get_cachable_value.__name__ = callable.__name__
+        get_cachable_value.__doc__ = callable.__doc__
+        return get_cachable_value
+        
+    return cache_callable
 
 class Collection(object):
     """
