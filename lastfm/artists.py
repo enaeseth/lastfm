@@ -15,17 +15,17 @@ class Biography(object):
         self._published = published
         
     @property
-    def summary():
+    def summary(self):
         """The summary of the artist biography."""
         return self._summary
     
     @property
-    def content():
+    def content(self):
         """The biography text."""
         return self._content
     
     @property
-    def published():
+    def published(self):
         """The publication date and time as a datetime.datetime object."""
         return self._published
         
