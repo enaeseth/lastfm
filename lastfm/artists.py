@@ -13,11 +13,15 @@ class Artist(SmartData):
     Represents an artist in the last.fm database.
     """
     
-    def __init__(self, client, name=None):
+    def __init__(self, client, name=None, id=None, url=None):
         super(Artist, self).__init__(client)
         if name:
             self._name = name
-        
+        if id:
+            self._id = id
+        if url:
+            self._url = url
+    
     _fields = (
         ("name", None),
         ("mbid", None, "_id"),
