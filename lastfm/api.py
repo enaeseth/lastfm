@@ -94,12 +94,12 @@ class Client(object):
     def agent(self):
         """The HTTP request agent used by the client."""
         return self._agent
-        
+    
     @property
     def raw(self):
         """An APIAccess object that gives raw access to the last.fm API."""
         return self._access
-        
+    
     @property
     def artists(self):
         """An object that gives access to last.fm artist information."""
@@ -108,7 +108,7 @@ class Client(object):
         
     def __repr__(self):
         return '<%s %s>' % (type(self).__name__, self._key)
-        
+    
     class _BlackHoleCache(object):
         """A black hole: a cache that stores nothing."""
         
