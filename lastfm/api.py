@@ -12,6 +12,7 @@ except ImportError:
 from lastfm.caching import local
 from lastfm.network import Agent, APIAccess
 from lastfm.artists import ArtistCollection
+from lastfm.albums import AlbumCollection
 
 class Client(object):
     """
@@ -65,6 +66,7 @@ class Client(object):
         self._access = APIAccess(self._key, self._agent)
         
         self._artists = ArtistCollection(self)
+        self._albums = AlbumCollection(self)
         
     @property
     def api_key(self):
@@ -105,7 +107,11 @@ class Client(object):
         """An object that gives access to last.fm artist information."""
         return self._artists
     
-        
+    @property
+    def albums(self):
+        """An object that gives access to last.fm album information."""
+        return self._albums
+    
     def __repr__(self):
         return '<%s %s>' % (type(self).__name__, self._key)
     

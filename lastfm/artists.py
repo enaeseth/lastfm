@@ -78,7 +78,18 @@ class Artist(SmartData):
             match = float(artist.pop('match'))
             matches.append((match, Artist.from_row(self._client, artist)))
         return matches
+    
+    @property
+    @cached_result('top_albums:{name}')
+    def top_albums(self):
+        """The top-played albums by this artist on last.fm."""
+        from lastfm.albums import Album
         
+        raw = self._client.raw.artist.get_top_albums(artist=self._name)
+        rows = raw['topalbums']['album']
+        
+        return [Album.from_row(self._client, row) for row in rows]
+    
     def _load_info(self):
         spec = (self._id and dict(mbid=self._id)) or dict(artist=self._name)
         self._add_data(self.fetch_row(self._client, spec))
