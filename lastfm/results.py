@@ -67,5 +67,13 @@ def read_search_results(data, result_field):
     results = data['results']
     
     match_field = '%smatches' % result_field
-    return (int(results['opensearch:totalResults']),
-        results[match_field][result_field])
+    result_count = int(results['opensearch:totalResults'])
+    if result_count <= 0:
+        result_list = []
+    else:
+        result_list = results[match_field][result_field]
+        if not isinstance(result_list, list):
+            # this happens when only one result is returned
+            # (last.fm's JSON mapping is truly terrible)
+            result_list = [result_list]
+    return (result_count, result_list)
