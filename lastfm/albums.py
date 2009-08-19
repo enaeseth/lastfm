@@ -21,22 +21,9 @@ class Album(SmartData):
         if name:
             self._name = name
     
-    def _handle_artist(info, client):
-        try:
-            params = {
-                'name': info.get('name'),
-                'id': info.get('mbid'),
-                'url': info.get('url')
-            }
-        except AttributeError:
-            # `info` is a string giving the name of the artist
-            params = dict(name=info)
-        
-        return artists.Artist(client, **params)
-    
     _fields = (
         ("name", None),
-        ("artist", _handle_artist, "_artist", True),
+        ("artist", handle_album_artist, "_artist", True),
         ("mbid", None, "_id"),
         ("releasedate", lambda v: date(*parsedate(v)[:3]),
             "_release_date"),

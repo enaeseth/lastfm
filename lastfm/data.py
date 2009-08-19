@@ -222,3 +222,21 @@ def parse_timestamp(stamp):
     datetime.datetime object representing that time.
     """
     return datetime(*parsedate(stamp)[:6])
+
+def handle_album_artist(info, client):
+    """
+    Creates an Artist object from the `artist` field on an album.
+    """
+    from lastfm.artists import Artist
+    
+    try:
+        params = {
+            'name': info.get('name'),
+            'id': info.get('mbid'),
+            'url': info.get('url')
+        }
+    except AttributeError:
+        # `info` is a string giving the name of the artist
+        params = dict(name=info)
+    
+    return Artist(client, **params)
