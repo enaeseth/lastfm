@@ -5,6 +5,8 @@ Provides a memcached-backed cache class that can be used with the Last.fm API
 module.
 """
 
+from __future__ import absolute_import
+
 try:
     import cmemcache as _memcache
 except ImportError:
@@ -13,6 +15,8 @@ except ImportError:
     except ImportError:
         raise ImportError("No memcache implementation module found "
             "(tried cmemcache and memcache)")
+
+import re
 
 class Cache(object):
     """
@@ -25,6 +29,8 @@ class Cache(object):
         stored_val = cache["foo"]
         del cache["foo"]
     """
+    
+    _control_chars = re.compile(r'[\x00-\x21\x7f]+')
     
     def __init__(self, servers, format=None, timeout=600):
         """
@@ -53,11 +59,11 @@ class Cache(object):
         
         if isinstance(servers, basestring):
             servers = [servers]
-        
-        self._client = _memcache.Client(servers)
+        self._client = _memcache.Client(servers, debug=0)
         
     def _expand_key(self, key):
-        return self._format % key
+        clean_key = self._control_chars.sub('_', key).lower()
+        return (self._format % clean_key).encode('UTF-8')
         
     def __getitem__(self, key):
         return self._client.get(self._expand_key(key))
