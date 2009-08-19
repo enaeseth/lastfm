@@ -168,5 +168,5 @@ class AlbumCollection(Collection):
         def match_to_album(match):
             return Album.from_row(self._client, match)
         
-        return SearchResult(retrieve_page, 'album', match_to_artist)
+        return SearchResult(retrieve_page, 'album', match_to_album)
     
