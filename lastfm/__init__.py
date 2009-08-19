@@ -2,6 +2,8 @@
 
 """
 A library for using the last.fm API from Python.
+
+See `lastfm.api.Client` for more usage information.
 """
 
 __author__ = "Eric Naeseth <enaeseth@gmail.com>"
