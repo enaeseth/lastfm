@@ -27,34 +27,34 @@ class APIError(LastFMError):
         return LastFMError.__new__(typ, message)
 
 class InvalidServiceError(APIError):
-	pass
+    pass
 
 class InvalidMethodError(APIError):
-	pass
+    pass
 
 class AuthenticationFailedError(APIError):
-	pass
+    pass
 
 class InvalidFormatError(APIError):
-	pass
+    pass
 
 class InvalidParametersError(APIError):
-	pass
+    pass
 
 class InvalidResourceError(APIError):
-	pass
+    pass
 
 class InvalidSessionKeyError(APIError):
-	pass
+    pass
 
 class InvalidAPIKeyError(APIError):
-	pass
+    pass
 
 class ServiceOfflineError(APIError):
-	pass
+    pass
 
 class SubscribersOnlyError(APIError):
-	pass
+    pass
 
 api_errors = {
     2: InvalidServiceError,
