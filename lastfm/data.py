@@ -248,3 +248,15 @@ def handle_album_artist(info, client):
         params = dict(name=info)
     
     return Artist(client, **params)
+
+def handle_tags(tags):
+    """
+    Handles a `tags` field on an artist, album, etc.
+    """
+    
+    if tags and isinstance(tags, dict) and 'tag' in tags:
+        if not isinstance(tags['tag'], list): # single tag returned
+            tags['tag'] = [tags['tag']]
+        return [tag['name'] for tag in tags['tag']]
+    else:
+        return []

@@ -31,6 +31,7 @@ class Album(SmartData):
         ("image", lambda lst: [Image.from_row(i) for i in lst], "_images"),
         ("listeners", int),
         ("playcount", int, "_play_count"),
+        ("toptags", handle_tags, "_tags"),
         ("url", None)
     )
     
@@ -73,6 +74,11 @@ class Album(SmartData):
     def play_count(self):
         """The number of times this album has been played on last.fm."""
         return self._play_count
+    
+    @smart_property
+    def tags(self):
+        """The top tags applied to this artist on last.fm."""
+        return self._tags or []
     
     @smart_property
     def url(self):

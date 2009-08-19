@@ -29,6 +29,7 @@ class Artist(SmartData):
         ("image", lambda lst: [Image.from_row(i) for i in lst], "_images"),
         ("stats", lambda s: dict((k, int(v)) for k, v in s.iteritems())),
         ("streamable", lambda v: bool(int(v))),
+        ("tags", handle_tags),
         ("url", None)
     )
     
@@ -61,6 +62,11 @@ class Artist(SmartData):
     def streamable(self):
         """Whether or not the artist can be streamed via last.fm."""
         return self._streamable
+    
+    @smart_property
+    def tags(self):
+        """The top tags applied to this artist on last.fm."""
+        return self._tags or []
     
     @smart_property
     def url(self):
