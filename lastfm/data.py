@@ -138,12 +138,20 @@ def smart_property(callable):
     available.
     """
     
+    loaded = [False]
     def load_if_needed(self, *args, **kwargs):
         result = callable(self, *args, **kwargs)
-        if result is not None:
+        
+        if isinstance(result, (list, dict)):
+            valid_result = len(result) > 0
+        else:
+            valid_result = result is not None
+        
+        if valid_result:
             return result
         
         self._load_info()
+        loaded[0] = True
         return callable(self, *args, **kwargs)
     
     load_if_needed.__name__ = callable.__name__
