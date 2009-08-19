@@ -18,7 +18,7 @@ class Client(object):
     A last.fm API client.
     
     All access to the API must go through a Client object.
-    All API requests are synchronus.
+    All API requests are synchronous.
     """
     
     def __init__(self, api_key, secret=None, cache=None, agent=None):
@@ -123,5 +123,4 @@ class Client(object):
 
         def __contains__(self, key):
             return False
-
 
