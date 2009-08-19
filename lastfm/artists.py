@@ -117,7 +117,7 @@ class Artist(SmartData):
         
     def __repr__(self):
         id_str = (self._id and ' (%s)' % self._id) or ''
-        return '<%s "%s"%s>' % (type(self).__name__, self.name, id_str)
+        return '<%s %r%s>' % (type(self).__name__, self.name, id_str)
         
     def __unicode__(self):
         id_str = (self._id and ' (%s)' % self._id) or ''
