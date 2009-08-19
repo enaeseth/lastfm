@@ -96,13 +96,20 @@ class SmartData(object):
         return obj
         
     def _add_data(self, row):
-        def add(prop, converter=None, dest=None):
+        def add(prop, converter=None, dest=None, needs_client=False):
             if not dest:
                 dest = '_%s' % prop
             
-            if prop in row:
+            value = row.get(prop)
+            if isinstance(value, basestring):
+                value = value.strip()
+            
+            if value:
                 if not converter:
                     converter = lambda v: v # identity function
+                elif needs_client:
+                    orig_converter = converter
+                    converter = lambda v: orig_converter(v, self._client)
                 setattr(self, dest, converter(row[prop]))
             elif not hasattr(self, dest):
                 setattr(self, dest, None)
@@ -113,7 +120,9 @@ class SmartData(object):
             else:
                 dest = None
             
-            add(spec[0], spec[1], dest)
+            needs_client = (len(spec) > 3 and spec[3]) or False
+            
+            add(spec[0], spec[1], dest, needs_client)
         
         return self
         
